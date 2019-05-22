@@ -24,7 +24,11 @@ class App {
       const messages = new PullRequests(prs, conditions).convertToSlackMessages()
 
       if (messages.length > 0) {
-        _.each(messages, (pr) => bot.say({text: pr, unfurl_links: false, unfurl_media: false, channel: message.channel}))
+        bot.say({text: _.join(messages, '\n'),
+                channel: message.channel,
+                unfurl_links: false,
+                unfurl_media: false,
+        })
       } else {
         bot.say({text: 'No pull requests for now.', channel: message.channel})
       }
