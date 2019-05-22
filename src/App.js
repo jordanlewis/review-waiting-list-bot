@@ -21,20 +21,13 @@ class App {
     const client = new GitHubApiClient()
 
     client.getAllPullRequests(conditions).then((prs) => {
-      bot.startConversation(message, (err, convo) => {
-        convo.say(':memo: Review waiting list!')
+      const messages = new PullRequests(prs, conditions).convertToSlackMessages()
 
-        const messages = new PullRequests(prs, conditions).convertToSlackMessages()
-
-        if (messages.length > 0) {
-          _.each(messages, (pr) => convo.say(pr))
-          convo.say("That's all. Please review!")
-        } else {
-          convo.say('No pull requests for now.')
-        }
-
-        convo.next()
-      })
+      if (messages.length > 0) {
+        _.each(messages, (pr) => bot.say({text: pr, unfurl_links: false, unfurl_media: false, channel: message.channel}))
+      } else {
+        bot.say({text: 'No pull requests for now.', channel: message.channel})
+      }
     })
   }
 
